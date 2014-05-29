@@ -1,3 +1,4 @@
+import sys
 from copy_state_db import CopyStateDB
 from faster_ordered_dict import FasterOrderedDict
 import gevent
@@ -29,11 +30,18 @@ class Stats(object):
 
     def log(self, adjusted=False):
         start_time = self.adj_start_time if adjusted else self.start_time
+        total = self.total_docs
+        if total == 0:
+            total = 1
         qps = int(float(self.inserted) / (time.time() - start_time))
-        pct = int(float(self.inserted)/self.total_docs*100.0)
-        log.info("%d%% | %d / %d copied | %d/sec | %d dupes | %d exceptions | %d retries" % 
+        pct = int(float(self.inserted)/total*100.0)
+        text = ("%d%% | %d / %d copied | %d/sec | %d dupes | %d exceptions | %d retries" %
                  (pct, self.inserted, self.total_docs, qps, self.duplicates,
                   self.exceptions, self.retries))
+
+        log.debug(text)
+        sys.stdout.write("\r"+text)
+        sys.stdout.flush()
 
 
 @auto_retry
@@ -64,7 +72,7 @@ def _copy_stats_worker(stats):
     """
     while True:
         stats.log()
-        gevent.sleep(1)
+        gevent.sleep(0.1)
 
 
 @log_exceptions
@@ -185,7 +193,8 @@ def copy_indexes(source, dest):
         kwargs = { 'name': name }
         index_key = None
         for k, v in index.items():
-            if k in ['unique', 'sparse']:
+#            print(index.items()+ " "+k+" "+v)
+            if k in ['unique', 'sparse', 'background', 'ns', 'expireAfterSeconds']:
                 kwargs[k] = v
             elif k == 'v':
                 continue

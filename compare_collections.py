@@ -14,6 +14,7 @@ import random
 import time
 import utils
 from utils import squelch_keyboard_interrupt
+import sys
 
 log = utils.get_logger(__name__)
 
@@ -31,10 +32,16 @@ class CompareStats(object):
 
 
     def log(self):
-        pct = int(float(self.compared) / self.total_docs * 100.0)
+        total = self.total_docs
+        if total == 0:
+            total = 1
+        pct = int(float(self.compared) / total * 100.0)
         qps = int(float(self.compared) / (time.time() - self.start_time))
-        log.info("%d%% | %d / %d compared | %s/sec | %d retries | %d mismatches" %
+        text = ("%d%% | %d / %d compared | %s/sec | %d retries | %d mismatches" %
                  (pct, self.compared, self.total_docs, qps, self.retries, self.mismatches))
+        log.info(text)
+        sys.stdout.write("\r"+text)
+        sys.stdout.flush()
 
 
 class MismatchLogger(object):
@@ -64,7 +71,7 @@ class MismatchLogger(object):
 def _stats_worker(stats):
     while True:
         stats.log()
-        gevent.sleep(1)
+        gevent.sleep(.1)
 
 
 def _retry_id_worker(_id, source_collection, dest_collection, retries, retry_delay, stats):
@@ -90,6 +97,9 @@ def _retry_id_worker(_id, source_collection, dest_collection, retries, retry_del
 
         source_doc = source_collection.find_one({'_id': _id})
         dest_doc = dest_collection.find_one({'_id': _id})
+
+        print("Source: "+source_doc)
+        print("Target: "+dest_doc)
 
         # doc was deleted from both places -- great
         if source_doc is None and dest_doc is None:
@@ -133,6 +143,7 @@ def _compare_ids_worker(_ids, source_collection, dest_collection, stats, retry_p
         source_doc = source_docs_dict.get(_id, None)
         dest_doc = dest_docs_dict.get(_id, None)
 
+
         # doc was deleted from both places -- ok
         if source_doc is None and dest_doc is None:
             stats.compared += 1
@@ -149,7 +160,7 @@ def _compare_ids_worker(_ids, source_collection, dest_collection, stats, retry_p
                          _id=_id,
                          source_collection=source_collection,
                          dest_collection=dest_collection,
-                         retries=10,
+                         retries=1,
                          retry_delay=1.0,
                          stats=stats)
 

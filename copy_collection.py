@@ -194,5 +194,4 @@ if __name__ == '__main__':
     # do the real work
     copy_collection_parent(sources, dest, state_db, args)
 
-    log.error("shouldn't reach this point")
-    sys.exit(1)
+    log.info("SUCCESS!!")

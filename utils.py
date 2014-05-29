@@ -19,7 +19,7 @@ def get_logger(name):
         return loggers[name]
 
     logger = logging.getLogger(name)
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.ERROR)
     sh = logging.StreamHandler()
     sh.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s:%(processName)s] %(message)s",
                                       "%m-%d %H:%M:%S"))
