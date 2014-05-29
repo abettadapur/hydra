@@ -106,8 +106,8 @@ def copy_collection(source, dest, state_path, percent):
 
     # record timestamp of last oplog entry, so that we know where to start applying ops
     # later
-    oplog_ts = utils.get_last_oplog_entry(source_client)['ts']
-    state_db.update_oplog_ts(source, dest, oplog_ts)
+#    oplog_ts = utils.get_last_oplog_entry(source_client)['ts']
+ #   state_db.update_oplog_ts(source, dest, oplog_ts)
 
     # for testing copying of indices quickly
     if percent == 0:
