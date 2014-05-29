@@ -101,41 +101,42 @@ def copy_collection_parent(sources, dest, state_db, args):
     # -----------------------------------------------------------------------
     # apply oplogs
     # -----------------------------------------------------------------------
-    applying_oplog = state_db.select_by_state(CopyStateDB.STATE_APPLYING_OPLOG)
-    if len(applying_oplog) < len(sources):
-        die("this shouldn't happen!")
+    #applying_oplog = state_db.select_by_state(CopyStateDB.STATE_APPLYING_OPLOG)
+    #if len(applying_oplog) < len(sources):
+       # die("this shouldn't happen!")
 
-    log.info("starting oplog apply")
+   # log.info("starting oplog apply")
 
     # create worker thread that prints headers for oplog stats on a regular basis;
     # we do this to prevent the visual clutter caused by multiple processes doing this
     #
     # we avoid using gevent in the parent process to avoid weirdness I've seen with fork()ed
     # gevent loops
-    header_delay = max(float(20) / len(sources),10) 
-    stats_name = string.ljust("stats", max_process_name_len)
-    stats_proc = multiprocessing.Process(target=oplog_applier.print_header_worker,
-                                         args=(header_delay,),
-                                         name=stats_name)
-    stats_proc.start()
+   # header_delay = max(float(20) / len(sources),10)
+    #stats_name = string.ljust("stats", max_process_name_len)
+    #stats_proc = multiprocessing.Process(target=oplog_applier.print_header_worker,
+      #                                   args=(header_delay,),
+      #                                   name=stats_name)
+   # stats_proc.start()
 
     # need to isolate calls to gevent here, to avoid forking with monkey-patched modules
     # (which seems to create funkiness)
-    processes = []
-    for source in sources:
-        name = process_names[repr(source)]
-        process = multiprocessing.Process(target=oplog_applier.apply_oplog,
-                                          name=name,
-                                          kwargs=dict(source=source,
-                                                      dest=dest,
-                                                      percent=args.percent,
-                                                      state_path=state_db._path))
-        process.start()
-        processes.append(process)
+   #processes = []
+    #for source in sources:
+     #   name = process_names[repr(source)]
+      #  process = multiprocessing.Process(target=oplog_applier.apply_oplog,
+       #                                   name=name,
+        #                                  kwargs=dict(source=source,
+         #                                             dest=dest,
+          #                                            percent=args.percent,
+
+           #                                           state_path=state_db._path))
+        #process.start()
+        #processes.append(process)"""
 
     # this should *never* finish
-    processes.append(stats_proc)
-    utils.wait_for_processes(processes)
+   # processes.append(stats_proc)
+    #utils.wait_for_processes(processes)
 
 
 if __name__ == '__main__':
