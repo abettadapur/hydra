@@ -13,6 +13,7 @@ cleanup()
 	rm --f marconi_queues.queues.db
 	rm --f marconi_catalogue.catalogue.db
 	rm --f marconi_shards.shards.db
+	rm --f marconi_queues.nprojects.db
 
 }
 
