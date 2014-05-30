@@ -32,9 +32,9 @@ class Stats(object):
             total = 1
         qps = int(float(self.inserted) / (time.time() - start_time))
         pct = int(float(self.inserted)/total*100.0)
-        text = ("%d%% | %d / %d copied | %d/sec | %d dupes | %d exceptions | %d retries | %d batch" %
+        text = ("%d%% | %d / %d adjusted | %d/sec | %d dupes | %d exceptions | %d retries" %
                  (pct, self.inserted, self.total_docs, qps, self.duplicates,
-                  self.exceptions, self.retries, self.batch))
+                  self.exceptions, self.retries))
 
         log.debug(text)
         sys.stdout.write("\r"+text)
@@ -57,8 +57,10 @@ def adjust_ttl_batch_worker(source_collection, seconds, ids, stats):
         time = doc['e']
         id = doc['_id']
         newtime = time+datetime.timedelta(seconds=seconds)
+        claim = doc['c']
+        claim['e'] += seconds
         doc['e'] = newtime
-        source_collection.update({'_id': id}, {"$set": {'e': newtime}}, upsert=False)
+        source_collection.update({'_id': id}, {"$set": {'e': newtime, 'c': claim}}, upsert=False)
         stats.inserted += 1
 
 

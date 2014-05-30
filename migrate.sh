@@ -28,6 +28,25 @@ control_c()
 trap control_c SIGINT
 
 START=$(date +%s)
+
+echo -e "Increasing TTLS on $1 by $5\n"
+python adjust_ttl.py --source $1/marconi_messages_p0/messages --seconds $5
+echo -e "\n"
+python adjust_ttl.py --source $1/marconi_messages_p1/messages --seconds $5
+echo -e "\n"
+python adjust_ttl.py --source $1/marconi_messages_p2/messages --seconds $5
+echo -e "\n"
+python adjust_ttl.py --source $1/marconi_messages_p3/messages --seconds $5
+echo -e "\n"
+python adjust_ttl.py --source $1/marconi_messages_p4/messages --seconds $5
+echo -e "\n"
+python adjust_ttl.py --source $1/marconi_messages_p5/messages --seconds $5
+echo -e "\n"
+python adjust_ttl.py --source $1/marconi_messages_p6/messages --seconds $5
+echo -e "\n"
+python adjust_ttl.py --source $1/marconi_messages_p7/messages --seconds $5
+echo -e "\n"
+
 echo -e "Copying Queues from $1 to $2\n"
 python copy_collection.py --source $1/marconi_queues/queues --dest $2/marconi_queues/queues
 

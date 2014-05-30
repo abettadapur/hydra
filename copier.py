@@ -165,6 +165,7 @@ def copy_collection(source, dest, state_path, percent):
 
     # wait until all other outstanding inserts have finished
     insert_pool.join()
+    stats.log()
     stats_greenlet.kill()
     log.info("done with initial copy")
 

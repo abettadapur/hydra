@@ -98,8 +98,8 @@ def _retry_id_worker(_id, source_collection, dest_collection, retries, retry_del
         source_doc = source_collection.find_one({'_id': _id})
         dest_doc = dest_collection.find_one({'_id': _id})
 
-        print("Source: "+source_doc)
-        print("Target: "+dest_doc)
+        #print("Source: "+source_doc)
+        #print("Target: "+dest_doc)
 
         # doc was deleted from both places -- great
         if source_doc is None and dest_doc is None:
