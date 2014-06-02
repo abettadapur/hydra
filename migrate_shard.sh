@@ -1,5 +1,9 @@
 #!/bin/sh
 
+####
+# Usage ./migrate_shard.sh sourceDB destDB ttl_offset
+####
+
 cleanup()
 {
 	rm --f marconi_messages_p0.messages.db
@@ -30,22 +34,22 @@ trap control_c SIGINT
 
 START=$(date +%s)
 
-echo -e "Increasing TTLS on $1 by $5\n"
-python adjust_ttl.py --source $1/marconi_messages_p0/messages --seconds $5
+echo -e "Increasing TTLS on $1 by $3\n"
+python adjust_ttl.py --source $1/marconi_messages_p0/messages --seconds $3
 echo -e "\n"
-python adjust_ttl.py --source $1/marconi_messages_p1/messages --seconds $5
+python adjust_ttl.py --source $1/marconi_messages_p1/messages --seconds $3
 echo -e "\n"
-python adjust_ttl.py --source $1/marconi_messages_p2/messages --seconds $5
+python adjust_ttl.py --source $1/marconi_messages_p2/messages --seconds $3
 echo -e "\n"
-python adjust_ttl.py --source $1/marconi_messages_p3/messages --seconds $5
+python adjust_ttl.py --source $1/marconi_messages_p3/messages --seconds $3
 echo -e "\n"
-python adjust_ttl.py --source $1/marconi_messages_p4/messages --seconds $5
+python adjust_ttl.py --source $1/marconi_messages_p4/messages --seconds $3
 echo -e "\n"
-python adjust_ttl.py --source $1/marconi_messages_p5/messages --seconds $5
+python adjust_ttl.py --source $1/marconi_messages_p5/messages --seconds $3
 echo -e "\n"
-python adjust_ttl.py --source $1/marconi_messages_p6/messages --seconds $5
+python adjust_ttl.py --source $1/marconi_messages_p6/messages --seconds $3
 echo -e "\n"
-python adjust_ttl.py --source $1/marconi_messages_p7/messages --seconds $5
+python adjust_ttl.py --source $1/marconi_messages_p7/messages --seconds $3
 echo -e "\n"
 
 echo -e "Copying Queues from $1 to $2\n"
@@ -72,12 +76,6 @@ echo -e "\nCopying Messages_7 from $1 to $2 \n"
 python copy_collection.py --source $1/marconi_messages_p7/messages --dest $2/marconi_messages_p7/messages
 echo -e "\nCopying Messages_8 from $1 to $2 \n"
 
-echo -e "\nCopying Catalogue from $3 to $4 \n"
-python copy_collection.py --source $3/marconi_catalogue/catalogue --dest $4/marconi_catalogue/catalogue
-
-echo -e "\nCopying Shards from $3 to $4 \n"
-python copy_collection.py --source $3/marconi_shards/shards --dest $4/marconi_shards/shards
-
 echo -e "\nPerforming Integrity Checks on Messages_0\n"
 python compare_collections.py --source $1/marconi_messages_p0/messages --dest $2/marconi_messages_p0/messages
 echo -e "\nPerforming Integrity Checks on Messages_1\n"
@@ -100,12 +98,6 @@ python compare_collections.py --source $1/marconi_queues/queues --dest $2/marcon
 
 echo -e "\nCopying nprojects from $1 to $2 \n"
 python compare_collections.py --source $1/marconi_queues/nprojects --dest $2/marconi_queues/nprojects
-
-echo -e "\nPerforming Integrity Checks on Catalogue\n"
-python compare_collections.py --source $3/marconi_catalogue/catalogue --dest $4/marconi_catalogue/catalogue
-
-echo -e "\nPerforming Integrity Checks on Shards\n"
-python compare_collections.py --source $3/marconi_shards/shards --dest $4/marconi_shards/shards
 
 echo -e "\nCleaning up...."
 
