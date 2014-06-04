@@ -12,9 +12,9 @@ def get_client(ip_address, connection_string):
     return connection
 
 def main():
-    if len(sys.arv) <=1:
+    if len(sys.argv) <=1:
         usg = "usage: python {0} {1} {2}"
-        print(usg.format(sys.argv[0], "catalog db ip address", "connection string"))
+        print(usg.format(sys.argv[0], "<catalog db ip address>", "<connection string>"))
         sys.exit(1)
     client = get_client(sys.argv[1], sys.arv[2])
     db = client['marconi_shards']
